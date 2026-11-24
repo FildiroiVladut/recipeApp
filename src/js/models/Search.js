@@ -1,6 +1,4 @@
 import axios from "axios";
-import "core-js/stable";
-import "regenerator-runtime/runtime";
 
 export default class Search {
   constructor(query) {
@@ -13,7 +11,10 @@ export default class Search {
         `https://forkify-api.herokuapp.com/api/search?q=${this.query}`
       );
       
-      this.result = res.data.recipes;
+      this.result = res.data.recipes.map((r) => ({
+        ...r,
+        image_url: r.image_url.replace(/^http:/, "https:"),
+      }));
 
       //console.log(this.result);
     } catch (error) {

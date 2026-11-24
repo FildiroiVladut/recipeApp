@@ -1,6 +1,5 @@
 import { elements } from "./base";
 import Fraction from "fraction.js";
-import { format } from "core-js/fn/date";
 
 export const clearRecipe = () => {
   elements.recipe.innerHTML = " ";

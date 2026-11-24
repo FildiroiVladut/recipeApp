@@ -41,7 +41,7 @@ const controlSearch = async () => {
       clearLoader();
       searchView.renderResults(state.search.result);
     } catch (err) {
-      alert("someting went wrong into the search controller");
+      alert("Something went wrong with the search. Please try again.");
       clearLoader();
     }
   }
@@ -95,7 +95,10 @@ const controlRecipe = async () => {
 
       // Render recipe
       clearLoader();
-      recipeView.renderRecipe(state.recipe, state.likes.isLiked(id));
+      recipeView.renderRecipe(
+        state.recipe,
+        state.likes ? state.likes.isLiked(id) : false
+      );
     } catch (err) {
       console.log(err);
       alert("Error processing recipe!");
@@ -126,7 +129,9 @@ const controlList = () => {
 
 // Handle delete and pdate list item events
 elements.shopping.addEventListener("click", (e) => {
-  const id = e.target.closest(".shopping__item").dataset.itemid;
+  const item = e.target.closest(".shopping__item");
+  if (!item) return;
+  const id = item.dataset.itemid;
 
   //Handel the delete button
   if (e.target.matches(".shopping__delete, .shopping__delete *")) {

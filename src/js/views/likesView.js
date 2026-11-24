@@ -1,4 +1,3 @@
-import { is } from "core-js/fn/object";
 import { elements } from "./base";
 import { limitRecipeTitle } from "./searchView";
 
