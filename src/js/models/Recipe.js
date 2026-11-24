@@ -6,106 +6,23 @@ export default class Recipe {
   }
 
   async getRecipe() {
-    try {
-      const res = await axios(
-        `https://forkify-api.herokuapp.com/api/get?rId=${this.id}`
-      );
+    const res = await axios(
+      `https://forkify-api.herokuapp.com/api/v2/recipes/${this.id}`
+    );
+    const recipe = res.data.data.recipe;
 
-      this.title = res.data.recipe.title;
-      this.author = res.data.recipe.publisher;
-      this.img = res.data.recipe.image_url.replace(/^http:/, "https:");
-      this.url = res.data.recipe.source_url;
-      this.ingredients = res.data.recipe.ingredients;
-    } catch (error) {
-      console.log(error);
-      alert("Something went wrong into the Recipes.js");
-    }
-  }
-
-  calcTime() {
-    const numIng = this.ingredients.length;
-    const periods = Math.ceil(numIng / 3);
-    this.time = periods * 15;
-  }
-
-  calcServings() {
-    this.servings = 4;
-  }
-
-  parseIngredients() {
-    const unitsLong = [
-      "tablespoons",
-      "tablespoon",
-      "ounces",
-      "ounce",
-      "teaspoons",
-      "teaspoon",
-      "cups",
-      "pounds",
-    ];
-    const unitsShort = [
-      "tbsp",
-      "tbsp",
-      "oz",
-      "oz",
-      "tsp",
-      "tsp",
-      "cup",
-      "pound",
-    ];
-
-    const units = [...unitsShort, "kg", "g"];
-
-    const newIngredients = this.ingredients.map((el) => {
-      // 1) Unifrom units
-      let ingredient = el.toLowerCase();
-      unitsLong.forEach((unit, i) => {
-        ingredient = ingredient.replace(unit, unitsShort[i]);
-      });
-      // 2) Remove paranthesis
-      ingredient = ingredient.replace(/ *\([^)]*\) */g, " ");
-      // 3) Parse ingredients into count, unit and ingredient
-
-      const arrIng = ingredient.split(" ");
-      const unitIndex = arrIng.findIndex((el2) => units.includes(el2));
-
-      let objIng;
-      if (unitIndex > -1) {
-        //there is a unit
-        // Ex. 4 1/2 cups, arrCount is [4, 1/2]
-        // Ex. 4 cups, arrCount is [4];
-        const arrCount = arrIng.slice(0, unitIndex);
-        let count;
-        if (arrCount.length === 1) {
-          count = eval(arrIng[0].replace("-", "+"));
-        } else {
-          count = eval(arrIng.slice(0, unitIndex).join("+"));
-        }
-
-        objIng = {
-          count,
-          unit: arrIng[unitIndex],
-          ingredient: arrIng.slice(unitIndex + 1).join(" "),
-        };
-      } else if (parseInt(arrIng[0], 10)) {
-        // there is no unit, but the first element is a number
-        objIng = {
-          count: parseInt(arrIng[0], 10),
-          unit: "",
-          ingredient: arrIng.slice(1).join(" "),
-        };
-      } else if (unitIndex === -1) {
-        // there is no unit and no number in 1st position
-        objIng = {
-          count: 1,
-          unit: "",
-          ingredient,
-        };
-      }
-
-      return objIng;
-    });
-    this.ingredients = newIngredients;
+    this.title = recipe.title;
+    this.author = recipe.publisher;
+    this.img = recipe.image_url.replace(/^http:/, "https:");
+    this.url = recipe.source_url;
+    this.time = recipe.cooking_time;
+    this.servings = recipe.servings;
+    // v2 already returns structured ingredients: { quantity, unit, description }
+    this.ingredients = recipe.ingredients.map((ing) => ({
+      count: ing.quantity,
+      unit: ing.unit,
+      ingredient: ing.description,
+    }));
   }
 
   updateServings(type) {
@@ -113,7 +30,8 @@ export default class Recipe {
     const newServings = type === "dec" ? this.servings - 1 : this.servings + 1;
     //ingredients
     this.ingredients.forEach((ing) => {
-      ing.count *= newServings / this.servings;
+      // "salt to taste" has no quantity; leave it as is
+      if (ing.count) ing.count *= newServings / this.servings;
     });
 
     this.servings = newServings;

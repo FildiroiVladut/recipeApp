@@ -6,7 +6,7 @@ import * as searchView from "./views/searchView";
 import * as recipeView from "./views/recipeView";
 import * as listView from "./views/listView";
 import * as likesView from "./views/likesView";
-import { elements, renderLoader, clearLoader } from "./views/base";
+import { elements, renderLoader, clearLoader, renderMessage } from "./views/base";
 
 /*Global state of the app
 
@@ -39,10 +39,21 @@ const controlSearch = async () => {
 
       // 5) render results on UI
       clearLoader();
+      if (state.search.result.length === 0) {
+        renderMessage(
+          elements.searchResList,
+          `No recipes found for "${query}". Try another ingredient, e.g. soup, chicken or avocado.`
+        );
+        return;
+      }
       searchView.renderResults(state.search.result);
     } catch (err) {
-      alert("Something went wrong with the search. Please try again.");
+      console.error(err);
       clearLoader();
+      renderMessage(
+        elements.searchResList,
+        "Something went wrong with the search. Please try again in a moment."
+      );
     }
   }
 };
@@ -84,14 +95,8 @@ const controlRecipe = async () => {
     state.recipe = new Recipe(id);
 
     try {
-      // Get recipe data and parse ingredients
+      // Get recipe data (ingredients, servings and time come from the API)
       await state.recipe.getRecipe();
-
-      state.recipe.parseIngredients();
-
-      // Calculate servings and time
-      state.recipe.calcTime();
-      state.recipe.calcServings();
 
       // Render recipe
       clearLoader();
@@ -100,8 +105,12 @@ const controlRecipe = async () => {
         state.likes ? state.likes.isLiked(id) : false
       );
     } catch (err) {
-      console.log(err);
-      alert("Error processing recipe!");
+      console.error(err);
+      clearLoader();
+      renderMessage(
+        elements.recipe,
+        "We couldn't load this recipe. Please pick another one from the list."
+      );
     }
   }
 };

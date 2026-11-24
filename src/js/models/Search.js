@@ -1,24 +1,21 @@
 import axios from "axios";
 
+const API_URL = "https://forkify-api.herokuapp.com/api/v2/recipes";
+
 export default class Search {
   constructor(query) {
     this.query = query;
   }
 
+  // Throws on network/API errors; the controller decides how to show them
   async getResults() {
-    try {
-      const res = await axios(
-        `https://forkify-api.herokuapp.com/api/search?q=${this.query}`
-      );
-      
-      this.result = res.data.recipes.map((r) => ({
-        ...r,
-        image_url: r.image_url.replace(/^http:/, "https:"),
-      }));
+    const res = await axios(API_URL, { params: { search: this.query } });
 
-      //console.log(this.result);
-    } catch (error) {
-      alert(error);
-    }
+    this.result = res.data.data.recipes.map((r) => ({
+      recipe_id: r.id,
+      title: r.title,
+      publisher: r.publisher,
+      image_url: r.image_url.replace(/^http:/, "https:"),
+    }));
   }
 }

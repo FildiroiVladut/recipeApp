@@ -25,6 +25,19 @@ export const renderLoader = (parent) => {
   parent.insertAdjacentHTML("afterbegin", loader);
 };
 
+// Friendly inline message (replaces alert pop-ups)
+export const renderMessage = (parent, text) => {
+  const markup = `
+      <div class="message">
+         <svg>
+            <use href="img/icons.svg#icon-smile"></use>
+         </svg>
+         <p>${text}</p>
+      </div>
+   `;
+  parent.insertAdjacentHTML("afterbegin", markup);
+};
+
 export const clearLoader = () => {
   const loader = document.querySelector(`.${elementStrings.loader}`);
   if (loader) loader.parentElement.removeChild(loader);

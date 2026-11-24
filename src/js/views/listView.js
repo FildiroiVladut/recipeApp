@@ -1,7 +1,7 @@
 import { elements } from "./base";
 
 // Scaled servings produce values like 0.3125; keep the input readable
-const roundCount = (count) => Math.round(count * 100) / 100;
+const roundCount = (count) => (count ? Math.round(count * 100) / 100 : "");
 
 export const renderItem = (item) => {
   const markup = `

@@ -10,7 +10,7 @@ const formatCount = (count) => {
     const num = new Fraction(count).simplify(0.00001);
     return num.toFraction(true);
   }
-  return "?";
+  return "";
 };
 
 const createIngredient = (ingredient) => `

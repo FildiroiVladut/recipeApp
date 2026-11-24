@@ -413,6 +413,11 @@ svg {
   margin-left: auto;
 }
 
+.results .message {
+  margin: 2rem auto;
+  font-size: 1.6rem;
+}
+
 /* ---------- Recipe ---------- */
 
 .recipe {
@@ -420,7 +425,8 @@ svg {
   background: var(--bg-panel);
 }
 
-.recipe__empty {
+.recipe__empty,
+.message {
   max-width: 40rem;
   margin: 8rem auto;
   padding: 0 3rem;
@@ -431,7 +437,8 @@ svg {
   line-height: 1.5;
 }
 
-.recipe__empty svg {
+.recipe__empty svg,
+.message svg {
   width: 3rem;
   height: 3rem;
   color: var(--color-primary);
